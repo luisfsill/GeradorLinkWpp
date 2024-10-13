@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Link WhatsApp</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            color: #4CAF50;
+        }
+
+        .container {
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+            width: 90%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column; /* Empilha os botões um embaixo do outro */
+            gap: 10px; /* Espaçamento entre os botões */
+        }
+
+        .button-group button, .button-group a {
+            width: 100%; /* Ambos os botões ocuparão 100% da largura */
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .button-group a:hover, .button-group button:hover {
+            background-color: #45a049;
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerador de Link de WhatsApp</h1>
+        <label for="phoneNumber">Insira o número de WhatsApp (com DDD):</label>
+        <input type="tel" id="phoneNumber" pattern="[0-9]{12,}" placeholder="Ex: 5511998765432" required>
+        <button onclick="generateLink()">Gerar Link</button>
+
+        <div id="button-container" class="hidden">
+            <div class="button-group">
+                <button onclick="copyLink()">Copiar Link</button>
+                <a id="openLinkButton" href="#" target="_blank">Abrir no WhatsApp</a>
+            </div>
+            <p id="link"></p>
+        </div>
+    </div>
+
+    <script>
+        let whatsappLink = ''; // Variável global para armazenar o link
+
+        // Função para carregar o número salvo no localStorage
+        function loadSavedPhoneNumber() {
+            const savedNumber = localStorage.getItem('savedPhoneNumber');
+            if (savedNumber) {
+                document.getElementById('phoneNumber').value = savedNumber;
+            }
+        }
+
+        // Carregar o número salvo ao abrir a página
+        window.onload = loadSavedPhoneNumber;
+
+        function generateLink() {
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            
+            // Verifica se o campo de número foi preenchido
+            if (phoneNumber === '') {
+                alert('Por favor, insira um número de WhatsApp.');
+                return;
+            }
+
+            // Verifica se o número contém apenas números e tem pelo menos 12 dígitos (código do país + DDD + número)
+            const regex = /^[0-9]{12,}$/;
+            if (!regex.test(phoneNumber)) {
+                alert('Por favor, insira um número válido com pelo menos 12 dígitos.');
+                return;
+            }
+
+            whatsappLink = `https://wa.me/${phoneNumber}`;
+            
+            // Atualiza o link para o WhatsApp
+            const openLinkButton = document.getElementById('openLinkButton');
+            openLinkButton.setAttribute('href', whatsappLink);
+
+            // Exibe os botões de copiar e abrir
+            document.getElementById('button-container').classList.remove('hidden');
+
+            // Salva o número no localStorage
+            localStorage.setItem('savedPhoneNumber', phoneNumber);
+        }
+
+        function copyLink() {
+            // Copia o link gerado para a área de transferência
+            if (whatsappLink !== '') {
+                navigator.clipboard.writeText(whatsappLink).then(function() {
+                    alert('Link copiado com sucesso!');
+                }, function() {
+                    alert('Falha ao copiar o link.');
+                });
+            } else {
+                alert('Gere o link antes de copiar.');
+            }
+        }
+    </script>
+</body>
+</html>
